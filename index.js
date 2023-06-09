@@ -1,8 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+var bodyParser = require('body-parser'); 
 const app = express();
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
-app.use(express.bodyParser({ limit: '50mb' }));
 let servidores = [];
 
 app.get('/servidores', (req, res) => { //mandar 204 vazio
@@ -21,6 +23,7 @@ app.get('/servidores/:ip', (req, res) => {
 
 app.post('/servidores', (req, res) => {
     const { qnt_eventos, ip, porta, endpoint } = req.body;
+    InsertParameters("parameters", qnt_eventos, ip, porta, endpoint)
     if (qnt_eventos == null) {
         res.status(400).json({ message: 'quantidade de eventos nula' })
         return;
@@ -51,20 +54,21 @@ app.post('/servidores', (req, res) => {
 });
 
 app.put('/servidores/:ip', (req, res) => {
+    console.log('aaaaa')
     const { ip } = req.params;
     const { qnt_eventos, porta, endpoint } = req.body;
     const servidor = servidores.find(servidor => servidor.ip == ip);
-    if (qnt_eventos == null || ip == null || porta == null || endpoint == null) {
-        res.status(400).json({ message: 'campos nulos' })
-        return;
-    } // melhorar logica 
-    for (let i = 0; i < servidores.length; i++) {
-        const servidor = servidores[i];
-        if (ip === servidor.ip) {
-            res.status(400).json({ message: 'ip já existe na lista de itens' })
-            return
-        }
-    }
+    // if (qnt_eventos == null || ip == null || porta == null || endpoint == null) {
+    //     res.status(400).json({ message: 'campos nulos' })
+    //     return;
+    // } // melhorar logica 
+    // for (let i = 0; i < servidores.length; i++) {
+    //     const servidor = servidores[i];
+    //     if (ip === servidor.ip) {
+    //         res.status(400).json({ message: 'ip já existe na lista de itens' })
+    //         return
+    //     }
+    // }
     if (servidor) {
         servidor.qnt_eventos = qnt_eventos || servidor.qnt_eventos;
         servidor.ip = ip || servidor.ip;
