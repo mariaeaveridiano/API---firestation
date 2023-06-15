@@ -1,5 +1,6 @@
 const express = require('express');
-var bodyParser = require('body-parser'); 
+const bodyParser = require('body-parser'); 
+const db = require("./db");
 const app = express();
 app.use(bodyParser.urlencoded({
     extended: true
@@ -7,12 +8,28 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 let servidores = [];
 
+setInterval(async() => {
+let qnt_eventos
+const select_tudo = await db.selectParameters_all()
+console.log(select_tudo)
+}, 1000);
+
+setInterval(async() => {
+    let qnt_eventos
+    const select_ip = await db.selectParameters_ip()
+    console.log(select_ip)
+    }, 1000);
+
+// import {deleteParameters, updateParameters, selectParameters, insertParameters} from './db.js'
+
 app.get('/servidores', (req, res) => { //mandar 204 vazio
+    db.selectParameters_all("parameters")
     res.status(200).json(servidores);
 });
 
 app.get('/servidores/:ip', (req, res) => {
     const { ip } = req.params;
+    db.selectParameters_ip("parameters", ip)
     const servidor = servidores.find(servidor => servidor.ip == ip);
     if (servidor) {
         res.status(200).json(servidor);
@@ -23,7 +40,6 @@ app.get('/servidores/:ip', (req, res) => {
 
 app.post('/servidores', (req, res) => {
     const { qnt_eventos, ip, porta, endpoint } = req.body;
-    InsertParameters("parameters", qnt_eventos, ip, porta, endpoint)
     if (qnt_eventos == null) {
         res.status(400).json({ message: 'quantidade de eventos nula' })
         return;
@@ -40,6 +56,7 @@ app.post('/servidores', (req, res) => {
         res.status(400).json({ message: 'endpoint nulo' })
         return;
     } // melhorar logica
+    db.insertParameters("parameters", qnt_eventos, ip, porta, endpoint)
     for (let i = 0; i < servidores.length; i++) {
         const servidor = servidores[i];
         if (ip === servidor.ip) {
@@ -54,21 +71,10 @@ app.post('/servidores', (req, res) => {
 });
 
 app.put('/servidores/:ip', (req, res) => {
-    console.log('aaaaa')
     const { ip } = req.params;
     const { qnt_eventos, porta, endpoint } = req.body;
+    db.updateParameters("parameters", qnt_eventos, ip, porta, endpoint)
     const servidor = servidores.find(servidor => servidor.ip == ip);
-    // if (qnt_eventos == null || ip == null || porta == null || endpoint == null) {
-    //     res.status(400).json({ message: 'campos nulos' })
-    //     return;
-    // } // melhorar logica 
-    // for (let i = 0; i < servidores.length; i++) {
-    //     const servidor = servidores[i];
-    //     if (ip === servidor.ip) {
-    //         res.status(400).json({ message: 'ip já existe na lista de itens' })
-    //         return
-    //     }
-    // }
     if (servidor) {
         servidor.qnt_eventos = qnt_eventos || servidor.qnt_eventos;
         servidor.ip = ip || servidor.ip;
@@ -81,6 +87,7 @@ app.put('/servidores/:ip', (req, res) => {
 
     app.delete('/servidores/:ip', (req, res) => {
         const { ip } = req.params;
+        db.deleteParameters("parameters", ip)
         const servidorIndex = servidores.findIndex(servidor => servidor.ip == ip);
         if (servidorIndex !== -1) {
             servidores.splice(servidorIndex, 1);
