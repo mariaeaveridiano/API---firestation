@@ -12,88 +12,202 @@ let servidores = [];
 setInterval(async() => {
 const select_tudo = await db.selectParameters_all()
 console.log(select_tudo)
-}, 10000);
+}, 1000);
 
 setInterval(async() => {
     const select_ip = await db.selectParameters_ip()
     console.log(select_ip)
-    }, 10000);
+    }, 1000);
 
  function enviarpost (qnt_eventos,endpoint,porta,ip){
-        body= {
-        "qnt_eventos":5,
-        "endpoint":"/alura",
-        "porta":58,
-        "ip":"10.100.111.02",
-        "SchemaVersion": "1.0",
-        "Event": {
-        "Type": "GW005",
-        "DateTime": "09/09/21 15:25:47",
-        "Seq": 1383,
-        "GlobalSeq": 13333,
-        "Zone": 0,
-        "ZoneName": "",
-        "Loop": 0,
-        "Device": 11,
-        "DeviceType": "-",
-        "DeviceName": "DF APTO 401",
-        "Extract": "Alarme – 4 Andar DF APTO 401"
-        },
-        "General": {
-        "UserCode": 1234,
-        "Gw521Version": "0.0.9",
-        "CieVersion": "3.1.8",
-        "Alarms": 1,
-        "Supervisions": 0,
-        "Failures": 0,
-        "MacAddr": "00:04:25:1C:A1:0A"
-        }
-       }}
-       axios({
-        method:'post',
-        url: 'http://localhost:3000/servidores',
-        data:{
-            "qnt_eventos":5,
-            "endpoint":"/alura",
-            "porta":58,
-            "ip":"10.100.111.02",
-            "SchemaVersion": "1.0",
-            "Event": {
-            "Type": "GW005",
-            "DateTime": "09/09/21 15:25:47",
-            "Seq": 1383,
-            "GlobalSeq": 13333,
-            "Zone": 0,
-            "ZoneName": "",
-            "Loop": 0,
-            "Device": 11,
-            "DeviceType": "-",
-            "DeviceName": "DF APTO 401",
-            "Extract": "Alarme – 4 Andar DF APTO 401"
-            },
-            "General": {
-            "UserCode": 1234,
-            "Gw521Version": "0.0.9",
-            "CieVersion": "3.1.8",
-            "Alarms": 1,
-            "Supervisions": 0,
-            "Failures": 0,
-            "MacAddr": "00:04:25:1C:A1:0A"
-            }
-           },
-           headers:{}
-    }).then((response)=>{
-        console.log(response.status)
-    }).catch((error)=>{
-        console.log(error)
-    })
-    console.log (enviarpost)
- 
-    
-    for (let i = 0; i < `${qnt_eventos}`; i++) {
-        console.log(i)
-        
+    let body
+    for (let i = 0; i < qnt_eventos; i++) {
+        let sorteando = Math.floor(Math.random() * 6);
+        switch(sorteando){
+            case 0:
+            body = {
+                "qnt_eventos":5,
+                "endpoint":"/alura",
+                "porta":58,
+                "ip":"10.100.111.02",
+                "SchemaVersion": "1.0",
+                "Event": {
+                "Type": "GW005",
+                "DateTime": "09/09/21 15:25:47",
+                "Seq": 1383,
+                "GlobalSeq": 13333,
+                "Zone": 0,
+                "ZoneName": "",
+                "Loop": 0,
+                "Device": 11,
+                "DeviceType": "-",
+                "DeviceName": "DF APTO 401",
+                "Extract": "Alarme – 4 Andar DF APTO 401"
+                },
+                "General": {
+                "UserCode": 1234,
+                "Gw521Version": "0.0.9",
+                "CieVersion": "3.1.8",
+                "Alarms": 1,
+                "Supervisions": 0,
+                "Failures": 0,
+                "MacAddr": "00:04:25:1C:A1:0A"
+                }
+               }
+
+            break;
+            case 1:
+                body = {
+                    "SchemaVersion": "1.0",
+                    "Event": {
+                    "Type": "GW001",
+                    "DateTime": "09/09/21 17:05:13",
+                    "Seq": 1433,
+                    "GlobalSeq": 13630,
+                    "Zone": 1,
+                    "ZoneName": "GW521 Reset",
+                    "Loop": 0,
+                    "Device": 104,
+                    "DeviceType": "-",
+                    "DeviceName": "Versao: 0.0.9",
+                    "Extract": "Operacao – GW521 Reset Versao 0.0.9"
+                    },
+                    "General": {
+                    "UserCode": 1234,
+                    "Gw521Version": "0.0.9",
+                    "CieVersion": "3.1.8",
+                    "Alarms": 0,
+                    "Supervisions": 0,
+                    "Failures": 0,
+                   "MacAddr": "00:04:25:1C:A1:0A"
+                    }
+                   }
+            break;
+            case 2:
+                body = {
+                    "SchemaVersion": "1.0",
+                    "Event": {
+                    "Type": "GW002",
+                    "DateTime": "09/09/21 15:26:12",
+                    "Seq": 1318,
+                    "GlobalSeq": 13601,
+                    "Zone": 1,
+                    "ZoneName": "1",
+                    "Loop": 0,
+                    "Device": 21,
+                    "DeviceType": "Entrada Local CIE",
+                    "DeviceName": "Falha Comunicacao Repetidora – Repetidora 1",
+                    "Extract": "Falha – Entrada Local CIE – Falha Comunicacao Repetidora – Repetidora 1"
+                    },
+                    "General": {
+                    "UserCode": 1234,
+                    "Gw521Version": "0.0.9",
+                    "CieVersion": "3.1.8",
+                    "Alarms": 2,
+                    "Supervisions": 1,
+                    "Failures": 2,
+                   "MacAddr": "00:04:25:1C:A1:0A"
+                    }
+                   }
+            break;
+            case 3:
+                body = {
+                    "SchemaVersion": "1.0",
+                    "Event": {
+                    "Type": "GW003",
+                    "DateTime": "09/09/21 16:49:10",
+                    "Seq": 1407,
+                    "GlobalSeq": 13552,
+                    "Zone": 1,
+                    "ZoneName": "2 Andar",
+                    "Loop": 1,
+                    "Device": 5,
+                    "DeviceType": "Detector Temp.",
+                    "DeviceName": "DT APTO 203",
+                    "Extract": "Falha – 2 Andar DT APTO203"
+                    },
+                    "General": {
+                    "UserCode": 1234,
+                    "Gw521Version": "0.0.9",
+                    "CieVersion": "3.1.8",
+                    "Alarms": 2,
+                    "Supervisions": 1,
+                    "Failures": 1,
+                   "MacAddr": "00:04:25:1C:A1:0A"
+                    }
+                   }
+            break;
+            case 4:
+               body = {
+                "SchemaVersion": "1.0",
+                "Event": {
+                "Type": "GW004",
+                "DateTime": "09/09/21 16:44:07",
+                "Seq": 1401,
+                "GlobalSeq": 13539,
+                "Zone": 1,
+                "ZoneName": "Res. Incendio",
+                "Loop": 1,
+                "Device": 57,
+                "DeviceType": "Modulo Entrada",
+                "DeviceName": "Sensor Nivel",
+                "Extract": "Supervisao – Res Incendio Sensor Nivel"
+                },
+                "General": {
+                "UserCode": 1234,
+                "Gw521Version": "0.0.9",
+                "CieVersion": "3.1.8",
+                "Alarms": 2,
+                "Supervisions": 1,
+                "Failures": 0,
+               "MacAddr": "00:04:25:1C:A1:0A"
+                }
+               }
+            break;
+            case 5:
+                body = {
+                    "SchemaVersion": "1.0",
+                    "Event": {
+                    "Type": "GW005",
+                    "DateTime": "09/09/21 15:25:47",
+                    "Seq": 1383,
+                    "GlobalSeq": 13333,
+                    "Zone": 0,
+                    "ZoneName": "",
+                    "Loop": 0,
+                    "Device": 11,
+                    "DeviceType": "-",
+                    "DeviceName": "DF APTO 401",
+                    "Extract": "Alarme – 4 Andar DF APTO 401"
+                    },
+                    "General": {
+                    "UserCode": 1234,
+                    "Gw521Version": "0.0.9",
+                    "CieVersion": "3.1.8",
+                    "Alarms": 1,
+                    "Supervisions": 0,
+                    "Failures": 0,
+                    "MacAddr": "00:04:25:1C:A1:0A"
+                    }
+                   }
+            break;
+            
+        }   
+        axios({
+            method:'post',
+            url: `http://${ip}:${porta}${endpoint}`,
+            data: body,
+               headers:{}
+        }).then((response)=>{
+            console.log(response.status)
+        }).catch((error)=>{
+            console.log(error)
+        })
     }
+   
+ } 
+ console.log(enviarpost)
+ console.log('aaaa')
            
 app.get('/servidores', (req, res) => { //mandar 204 vazio
     db.selectParameters_all("parameters")
