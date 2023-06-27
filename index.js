@@ -12,6 +12,11 @@ let servidores = [];
 setInterval(async() => {
 const select_tudo = await db.selectParameters_all()
 console.log(select_tudo)
+for (let index = 0; index < select_tudo.length; index++) {
+    const element = select_tudo[index];
+    enviarpost(element.qnt_eventos, element.endpoint, element.porta, element.ip);
+   
+}
 }, 1000);
 
 setInterval(async() => {
@@ -20,16 +25,13 @@ setInterval(async() => {
     }, 1000);
 
  function enviarpost (qnt_eventos,endpoint,porta,ip){
+    console.log (qnt_eventos,endpoint,porta,ip)
     let body
-    for (let i = 0; i < qnt_eventos; i++) {
+    for (let i = 0; i < 1; i++) {
         let sorteando = Math.floor(Math.random() * 6);
         switch(sorteando){
             case 0:
             body = {
-                "qnt_eventos":5,
-                "endpoint":"/alura",
-                "porta":58,
-                "ip":"10.100.111.02",
                 "SchemaVersion": "1.0",
                 "Event": {
                 "Type": "GW005",
@@ -193,25 +195,30 @@ setInterval(async() => {
             break;
             
         }   
-        axios({
-            method:'post',
-            url: `http://${ip}:${porta}${endpoint}`,
-            data: body,
-               headers:{}
-        }).then((response)=>{
-            console.log(response.status)
+
+        axios.post(`http://${ip}:${porta}${endpoint}`, body, {
+            headers: {
+            'Content-Type': 'application/json'
+            }
+          }
+        )
+    .then((response)=>{
+            console.log(response.status,"sucess")
         }).catch((error)=>{
-            console.log(error)
+            console.log(error,"error")
         })
     }
    
  } 
- console.log(enviarpost)
- console.log('aaaa')
            
-app.get('/servidores', (req, res) => { //mandar 204 vazio
-    db.selectParameters_all("parameters")
-    res.status(200).json(servidores);
+app.get('/servidores', (req, res) => { 
+    db.selectParameters_all("parameters");
+    const servidor = servidores.find(servidor => servidor.ip == ip);
+    if (servidor) {
+        res.status(200).json(servidor);
+    } else {
+        res.status(204).json({ message: "servidor não encontrado." });
+    }
 });
 
 app.get('/servidores/:ip', (req, res) => {
@@ -227,20 +234,20 @@ app.get('/servidores/:ip', (req, res) => {
 
 app.post('/servidores', (req, res) => {
     const { qnt_eventos, ip, porta, endpoint } = req.body;
-    if (qnt_eventos == null) {
-        res.status(400).json({ message: 'quantidade de eventos nula' })
+    if (qnt_eventos == null || qnt_eventos === " " ||qnt_eventos === ""|| qnt_eventos === !'INT' || qnt_eventos < 0) {
+        res.status(400).json({ message: 'quantidade de eventos invalida' })
         return;
     } 
-    if (ip == null) {
-        res.status(400).json({ message: 'ip nulo' })
+    if (ip == null || ip === " " || ip === !'INT') {
+        res.status(400).json({ message: 'ip invalido' })
         return;
     } 
-    if (porta == null) {
-        res.status(400).json({ message: 'porta nula' })
+    if (porta == null|| porta === " " ||  porta === !'INT'|| porta<=1000 || porta>=65000) {
+        res.status(400).json({ message: 'porta invalida' })
         return;
     } 
-    if (endpoint == null) {
-        res.status(400).json({ message: 'endpoint nulo' })
+    if (endpoint == null|| endpoint === " " || endpoint === !'INT') {
+        res.status(400).json({ message: 'endpoint invalido' })
         return;
     } 
     db.insertParameters("parameters", qnt_eventos, ip, porta, endpoint)
@@ -251,7 +258,6 @@ app.post('/servidores', (req, res) => {
             return
         }
     }
-    //validar se são inteiros, eventos maior que 0, portas maior que 1000 e menos 65 mil 
     const servidor = { qnt_eventos, ip, porta, endpoint };
     servidores.push(servidor);
     res.status(201).json({ message: 'servidores cadastrados com sucesso.' });
@@ -283,9 +289,8 @@ app.put('/servidores/:ip', (req, res) => {
             res.status(404).json({ message: 'servidor não encontrado' });
         }
     })
-
-const port = 3000;
-app.listen(port, () => {
-    console.log(`servidor rodando em http://localhost:${port}`);
+const port = 6000;
+app.listen(port,() => {
+    console.log(`rodando na porta ${port}`);
 })
 
